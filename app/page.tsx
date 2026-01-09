@@ -143,7 +143,7 @@ export default function VideoRecorderSpike() {
   return (
     <div style={{ padding: '20px', fontFamily: 'system-ui, sans-serif' }}>
       <h1>Persistence Video</h1>
-      
+
       <div style={{ marginBottom: '20px', border: '1px solid #ccc', padding: '10px' }}>
         <video
           ref={videoPreviewRef}
@@ -164,7 +164,7 @@ export default function VideoRecorderSpike() {
           ) : (
             <button
               onClick={stopRecording}
-              style={{ padding: '10px 20px', background: 'black', color: 'white', border: 'none', borderRadius: '5px'}}
+              style={{ padding: '10px 20px', background: 'black', color: 'white', border: '1px solid #eee', borderRadius: '5px'}}
             >
               Stop & Save
             </button>
@@ -173,14 +173,14 @@ export default function VideoRecorderSpike() {
         <p><strong>Status:</strong> {status}</p>
       </div>
 
-      <h2>Saved on Device (IndexedDB)</h2>
-      <p style={{ fontSize: '0.9rem', color: '#666' }}>
+      <h2>Saved on Device</h2>
+      <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '10px' }}>
         These persist even if you close the tab or refresh.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {videos.map((v) => (
-          <div key={v.id} style={{ padding: '10px', border: '1px solid #eee', borderRadius: '8px', background: v.uploaded ? '#eaffea' : '#fff0f0' }}>
+          <div key={v.id} style={{ color: '#333', padding: '10px', border: '1px solid #eee', borderRadius: '8px', background: v.uploaded ? '#eaffea' : '#fff0f0' }}>
             <div><strong>ID:</strong> {v.id.split('_')[1]}</div>
             <div><strong>Size:</strong> {(v.blob.size / 1024 / 1024).toFixed(2)} MB</div>
             <div><strong>Status:</strong> {v.uploaded ? 'Uploaded' : 'Pending Upload'}</div>
@@ -188,12 +188,12 @@ export default function VideoRecorderSpike() {
             <div style={{ marginTop: '10px', display: 'flex', gap: '5px' }}>
               {!v.uploaded && (
                 <>
-                  <button onClick={() => uploadVideo(v.id, false)}>Try Upload</button>
-                  <button onClick={() => uploadVideo(v.id, true)}>Fail Upload</button>
+                  <button style={{ padding: '4px 12px', background: 'green', color: 'white', border: 'none', borderRadius: '5px'}} onClick={() => uploadVideo(v.id, false)}>Try Upload</button>
+                  <button style={{ padding: '4px 12px', background: 'red', color: 'white', border: 'none', borderRadius: '5px'}} onClick={() => uploadVideo(v.id, true)}>Fail Upload</button>
                 </>
               )}
-              {v.uploaded && <button onClick={() => deleteVideo(v.id)}>Clear Local</button>}
-              <button onClick={() => {
+              {v.uploaded && <button style={{ padding: '4px 12px', background: 'red', color: 'white', border: 'none', borderRadius: '5px'}} onClick={() => deleteVideo(v.id)}>Clear Local</button>}
+              <button style={{ padding: '4px 12px', color: '#241571', border: '1px solid #241571', borderRadius: '5px'}} onClick={() => {
                 const url = URL.createObjectURL(v.blob);
                 window.open(url, '_blank');
               }}>Play</button>
