@@ -1,36 +1,130 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Persistent Video Recorder
+
+A Next.js web application that demonstrates persistent video recording and storage. Videos are recorded directly in the browser and saved to IndexedDB, allowing them to persist across browser sessions and tabs.
+
+## High Level Architecture
+
+![Architecture Diagram](./public/persistent_video.jpeg)
+
+## Features
+
+- **Browser-based Video Recording**: Record video and audio directly from your device camera and microphone
+- **Persistent Storage**: Videos are stored in IndexedDB, persisting even after closing the tab or refreshing the page
+- **Upload Management**: Simulate video uploads with retry and failure scenarios
+- **Video Management**: View, play, and delete recorded videos
+- **Progress Tracking**: Real-time status updates on recording and upload operations
+- **Responsive UI**: Clean, simple interface that works on desktop and mobile devices
+
+## Tech Stack
+
+- **Framework**: [Next.js](https://nextjs.org/) with TypeScript
+- **Storage**: [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) via [idb-keyval](https://github.com/jakearchibald/idb-keyval)
+- **Styling**: CSS-in-JS inline styles
+- **Runtime**: Node.js / Bun
+
+## Prerequisites
+
+- Node.js 18+ or Bun
+- A modern browser with support for:
+  - MediaRecorder API
+  - getUserMedia API
+  - IndexedDB
 
 ## Getting Started
 
-First, run the development server:
+### Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
+```
+
+### Development
+
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will be available at `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Production Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+bun run build
+bun start
+```
 
-## Learn More
+## Usage
 
-To learn more about Next.js, take a look at the following resources:
+1. **Start Recording**: Click the "Start Recording" button to begin capturing video from your camera
+2. **Stop Recording**: Click "Stop & Save" to end the recording and save it to device storage
+3. **View Saved Videos**: Recorded videos appear in the "Saved on Device" section
+4. **Upload Video**: Click "Try Upload" to simulate uploading a video (2-second delay)
+5. **Test Failure**: Click "Fail Upload" to test network failure scenarios
+6. **Clear Local**: After successful upload, use this to remove the video from local storage
+7. **Play Video**: Click "Play" to open the video in a new tab
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Key Components
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### VideoRecorderSpike Component (`app/page.tsx`)
 
-## Deploy on Vercel
+The main component that handles:
+- Video stream management via `getUserMedia()`
+- MediaRecorder initialization with format detection
+- IndexedDB persistence using idb-keyval
+- UI state management for recording, uploads, and videos
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Key Functions
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `startRecording()`: Initiates camera capture and begins recording
+- `stopRecording()`: Stops the MediaRecorder and saves the blob
+- `uploadVideo()`: Simulates uploading a video with configurable success/failure
+- `deleteVideo()`: Removes a video from IndexedDB
+- `loadSavedVideos()`: Retrieves all persisted videos from IndexedDB
+
+## Video Format Support
+
+The application automatically detects and uses the best supported video format on your browser:
+1. `video/mp4`
+2. `video/webkit`
+3. `video/webm;codecs=vp9`
+4. `video/webm`
+
+## Storage
+
+Videos are stored in the browser's IndexedDB with the following structure:
+
+```typescript
+interface VideoRecord {
+  id: string;              // Format: video_[timestamp]
+  blob: Blob;              // The video file
+  timestamp: string;        // ISO timestamp
+  uploaded: boolean;        // Upload status
+  mimeType: string;        // Video format
+}
+```
+
+## Browser Support
+
+- Chrome/Edge 49+
+- Firefox 25+
+- Safari 10+
+- Opera 36+
+
+## Limitations
+
+- Videos are stored locally in the browser (subject to storage quota)
+- Storage limit typically 50MB+ depending on browser (check browser's storage quota)
+- MediaRecorder support required
+- HTTPS recommended for modern browsers (required for camera access in production)
+
+## Development Notes
+
+This is a spike/proof-of-concept application demonstrating:
+- Real-time video capture in the browser
+- Effective use of IndexedDB for client-side storage
+- Upload retry patterns with persistent state
+- Mobile-friendly media recording
+
+## License
+
+MIT
